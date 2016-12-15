@@ -112,6 +112,7 @@ class Builder(object):
       copy_sources = []
       drop_patterns = []
       for src_pattern in src_patterns:
+        src_pattern = self.MaybeParseSpecialValue(src_pattern)
         allow_no_matches = False
         is_drop_pattern = False
         pattern = self.SRC + src_pattern
@@ -172,6 +173,17 @@ class Builder(object):
     if not os.path.isdir(folder):
       print 'Create folder:', folder
       os.makedirs(folder)
+
+
+  # Checks if value is a macro and returns the the appropriate value of the
+  # Builder instance. If it's not then the same value is returned.
+  # Macros start and ends with "###". E.g. "##ABC###" means value of "ABC"
+  # property on the Builder instance.
+  def MaybeParseSpecialValue(self, value):
+    if value.startswith('###') and value.endswith('###'):
+      spc_name = value[3:-3]
+      return getattr(self, spc_name)
+    return value
    
   
   # Extarcts version number of the release from the sources.
@@ -289,3 +301,4 @@ class Builder(object):
     else:
       print 'No package requested, skipping.'
     print 'SUCCESS!'
+
