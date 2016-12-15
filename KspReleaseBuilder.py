@@ -4,7 +4,6 @@
 
 # A very simple class to produce a .ZIP archive with a KSP mod distribution.
 
-import collections
 import glob
 import json
 import os.path
@@ -44,7 +43,8 @@ class Builder(object):
   # A path where release structure will be constructed.
   DEST = '../Release'
 
-  # A path where resulted ZIP file wil be stored. It must exist.
+  # A path where resulted ZIP file wil be stored. It's counted relative to the
+  # release script.
   ARCHIVE_DEST = '..'
 
   # A format string which accepts VERSION as argument and return distribution
@@ -72,8 +72,7 @@ class Builder(object):
   # FIXME: make the glob patterns
   POST_BUILD_COPY = []
 
-  def __init__(self, name, make_script_path, archiver_path):
-    self.PACKAGE_NAME = name
+  def __init__(self, make_script_path, archiver_path):
     self.SHELL_COMPILE_BINARY_SCRIPT = make_script_path
     self.SHELL_ZIP_BINARY = archiver_path
     
@@ -94,13 +93,22 @@ class Builder(object):
   def CleanupReleaseFolder(self):
     print 'Cleanup release folder...'
     shutil.rmtree(self.DEST, True)
+
+
+  def __TargetsCmpFunction(self, x, y):
+    if x and x[0] == '/' and (not y or y[0] != '/'):
+      return -1
+    if y and y[0] == '/' and (not x or x[0] != '/'):
+      return 1
+    return cmp(x, y)
   
   
   # Creates whole release structure and copies the required files.
   def MakeFoldersStructure(self):
     # Make.
     print 'START: Building release structure:'
-    sorted_targets = sorted(self.STRUCTURE.iteritems(), key=lambda x: x[0])
+    sorted_targets = sorted(
+        self.STRUCTURE.iteritems(), key=lambda x: x[0], cmp=self.__TargetsCmpFunction)
     for (dest_folder, src_patterns) in sorted_targets:
       if not dest_folder or dest_folder[0] != '/':
         dest_path = self.DEST + '/GameData/' + self.PACKAGE_NAME
@@ -254,6 +262,7 @@ class Builder(object):
       print 'WARNING: Package already exists. Deleting.'
       os.remove(package_file_name)
   
+    self.MaybeCreateFolder(self.ARCHIVE_DEST)
     print 'Making %s package...' % self.PACKAGE_NAME
     code = self.InvokeArchiver(package_file_name, self.DEST)
     if code != 0:
@@ -277,23 +286,45 @@ class Builder(object):
   # - Versions for build otehr than 0 are named as '<mod_name>.1.2.3_build4.zip'.
   # - Release DLL builds into '/Source/bin/Release' and DLL anme matches package name.
   # - AVC-like version file is expected to exist in the mod's root.
-  def SetupDefaultLayout(self):
+  #
+  # @param name Name of the mod to use for folder and file names.
+  def SetupDefaultLayout(self, name):
+    self.PACKAGE_NAME = name
     self.DEST_RELEASE_NAME_FMT = self.PACKAGE_NAME + '_v%d.%d.%d'
     self.DEST_RELEASE_NAME_WITH_BUILD_FMT = self.PACKAGE_NAME + '_v%d.%d.%d_build%d'
     self.SRC_COMPILED_BINARY = '/Source/bin/Release/' + self.PACKAGE_NAME + '.dll'
     self.SRC_REPOSITORY_VERSION_FILE = '/' + self.PACKAGE_NAME + '.version'
 
 
-  # Runs all the steps and prudoces a release ZIP.
+  # Loads main build settings from a JSON file.
+  def LoadSettingsFromJson(self, file_name):
+    print 'Load settings from JSON file:', file_name
+    with open(file_name) as fp:
+      content = json.load(fp);
+    self.SetupDefaultLayout(content['PACKAGE_NAME'])
+    if 'SRC' in content:
+      self.SRC = content['SRC']
+    if 'DEST' in content:
+      self.DEST = content['DEST']
+    if 'ARCHIVE_DEST' in content:
+      self.ARCHIVE_DEST = content['ARCHIVE_DEST']
+    self.STRUCTURE = content['STRUCTURE']
+    if 'SRC_COMPILED_BINARY' in content:
+      self.SRC_COMPILED_BINARY = content['SRC_COMPILED_BINARY']
+    if 'SRC_REPOSITORY_VERSION_FILE' in content:
+      self.SRC_REPOSITORY_VERSION_FILE = content['SRC_REPOSITORY_VERSION_FILE']
+
+
+  # Runs all the steps and produces a release ZIP.
   # If overwrite_existing is not specified and there is a ZIP with the same name then this method fails.
   def MakeRelease(self, make_archive_zip, overwrite_existing=False):
     self.ExtractVersion()
     self.CleanupReleaseFolder()
     self.CompileBinary()
-    if self.SRC_VERSIONS_FILE:
+    if self.SRC_VERSIONS_FILE and self.SRC_REPOSITORY_VERSION_FILE:
       self.UpdateVersionInSources()
     else:
-      print 'No version file, skipping'
+      print 'No sources to set version, skipping'
     self.MakeFoldersStructure()
     self.PostBuildCopy()
     if make_archive_zip:    

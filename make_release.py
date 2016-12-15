@@ -4,7 +4,6 @@
 
 # Template runner for the builder script.
 
-import collections
 import getopt
 import sys
 
@@ -23,7 +22,18 @@ BUILD_SCRIPT = 'make_binary.cmd'
 # At the very least it will be the name of the release archive.
 MOD_NAME = 'EasyVesselSwitch'
 
-# END of adjust section
+# name of the file to read settings from. If set to None then method
+#  SetupBuildVariables*() will be invoked to obtaine the builder settings.
+RELEASE_JSON_FILE = 'release_setup.json'
+
+# END: ====== ADJUST section ends here.
+
+
+# Custom method to setup build er when JSON is disabled.
+def SetupBuildVariables(builder):
+  raise NotImplementedError(
+    'When RELEASE_JSON_FILE is not set SetupBuildVariables() method must be'
+    ' implemented');
 
 
 def main(argv):
@@ -36,40 +46,11 @@ def main(argv):
   need_package = '-p' in opts
   overwrite_existing  = '-o' in opts
 
-
-  builder = KspReleaseBuilder.Builder(
-      MOD_NAME, BUILD_SCRIPT, SHELL_ZIP_BINARY)
-  builder.SetupDefaultLayout()
-
-  builder.SRC = '..'
-#  builder.SRC_VERSIONS_FILE = '/Source/Properties/AssemblyInfo.cs'
-#  builder.SRC_COMPILED_BINARY = '/Source/bin/Release/' + MOD_NAME + '.dll'
-#  builder.SRC_REPOSITORY_VERSION_FILE = '/EasyVesselSwitch.version'
-#  builder.DEST = '../Release'
-#  builder.ARCHIVE_DEST = '..'
-#  builder.STRUCTURE['Patches'] = [
-#      '?/Patches/*',
-#  ]
-  builder.STRUCTURE['/CCK'] = [
-      '/LICENSE.md',
-      '/README.md',
-  ]
-  builder.STRUCTURE[''] = [
-      '/LICENSE.md',
-      '/README.md',
-  ]
-  builder.STRUCTURE['Plugins'] = [
-      builder.SRC_COMPILED_BINARY,
-      builder.SRC_REPOSITORY_VERSION_FILE,
-      '/Binaries/KSPDev_Utils*.dll',
-      '/Binaries/KSPDev_Utils_License.md',
-      '/Binaries/MiniAVC.dll',
-  ]
-  builder.STRUCTURE['Plugins/PluginData'] = [
-      '/PluginData/*',
-  ]
-
-  # Make the releasse!
+  builder = KspReleaseBuilder.Builder(BUILD_SCRIPT, SHELL_ZIP_BINARY)
+  if RELEASE_JSON_FILE:
+    builder.LoadSettingsFromJson(RELEASE_JSON_FILE)
+  else:
+    SetupBuildVariables(builder)
   builder.MakeRelease(need_package, overwrite_existing)
 
 
