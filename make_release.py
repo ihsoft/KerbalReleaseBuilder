@@ -27,6 +27,7 @@ def main(argv):
 
   builder = KspReleaseBuilder.Builder(
       MOD_NAME, BUILD_SCRIPT, SHELL_ZIP_BINARY)
+  builder.SetupDefaultLayout()
 
   builder.SRC = '..'
 #  builder.SRC_VERSIONS_FILE = '/Source/Properties/AssemblyInfo.cs'
@@ -37,6 +38,10 @@ def main(argv):
 #  builder.STRUCTURE['Patches'] = [
 #      '?/Patches/*',
 #  ]
+  builder.STRUCTURE['/CCK'] = [
+      '/LICENSE.md',
+      '/README.md',
+  ]
   builder.STRUCTURE[''] = [
       '/LICENSE.md',
       '/README.md',

@@ -67,15 +67,11 @@ class Builder(object):
   STRUCTURE = collections.OrderedDict({})
 
   # File copy actions to do after the build.
-  # First item of the tuple sets source, and the second item sets the target.
-  # Both paths must be full OS paths (either absolute or relative).
+  # First item of the tuple defines source, and the second item defines the target.
+  # The paths are *not* adjusted to either SRC or DEST. I.e. they can be anything.
   POST_BUILD_COPY = []
 
   def __init__(self, name, make_script_path, archiver_path):
-    self.DEST_RELEASE_NAME_FMT = name + '_v%d.%d.%d'
-    self.DEST_RELEASE_NAME_WITH_BUILD_FMT = name + '_v%d.%d.%d_build%d'
-    self.SRC_COMPILED_BINARY = '/Source/bin/Release/' + name + '.dll'
-    self.SRC_REPOSITORY_VERSION_FILE = '/' + name + '.version'
     self.PACKAGE_NAME = name
     self.SHELL_COMPILE_BINARY_SCRIPT = make_script_path
     self.SHELL_ZIP_BINARY = archiver_path
@@ -105,9 +101,11 @@ class Builder(object):
     print 'START: Building release structure:'
     for (dest_folder, src_patterns) in self.STRUCTURE.iteritems():
       if not dest_folder or dest_folder[0] != '/':
-        dest_path = self.DEST + '/GameData/' + self.PACKAGE_NAME + dest_folder
+        dest_path = self.DEST + '/GameData/' + self.PACKAGE_NAME
+        if dest_folder:
+          dest_path += '/' + dest_folder
       else:
-        dest_path = self.DEST + dest_folder
+        dest_path = self.DEST + '/GameData' + dest_folder
       print 'Folder:', dest_path
       copy_sources = []
       drop_patterns = []
@@ -167,6 +165,7 @@ class Builder(object):
     print 'END: Building release structure'
 
 
+  # Creates folder path if one doesn't exist.
   def MaybeCreateFolder(self, folder):
     if not os.path.isdir(folder):
       print 'Create folder:', folder
@@ -252,7 +251,21 @@ class Builder(object):
       exit(code)
 
 
-  def MakeRelease(self, make_archive, overwrite_existing=False):
+  # Sets basic settings to a common layout:
+  # - Versions for build 0 are named as '<mod_name>.1.2.3.zip'.
+  # - Versions for build otehr than 0 are named as '<mod_name>.1.2.3_build4.zip'.
+  # - Release DLL builds into '/Source/bin/Release' and DLL anme matches package name.
+  # - AVC-like version file is expected to exist in the mod's root.
+  def SetupDefaultLayout(self):
+    self.DEST_RELEASE_NAME_FMT = self.PACKAGE_NAME + '_v%d.%d.%d'
+    self.DEST_RELEASE_NAME_WITH_BUILD_FMT = self.PACKAGE_NAME + '_v%d.%d.%d_build%d'
+    self.SRC_COMPILED_BINARY = '/Source/bin/Release/' + self.PACKAGE_NAME + '.dll'
+    self.SRC_REPOSITORY_VERSION_FILE = '/' + self.PACKAGE_NAME + '.version'
+
+
+  # Runs all the steps and prudoces a release ZIP.
+  # If overwrite_existing is not specified and there is a ZIP with the same name then this method fails.
+  def MakeRelease(self, make_archive_zip, overwrite_existing=False):
     self.ExtractVersion()
     self.CleanupReleaseFolder()
     self.CompileBinary()
@@ -262,7 +275,7 @@ class Builder(object):
       print 'No version file, skipping'
     self.MakeFoldersStructure()
     self.PostBuildCopy()
-    if make_archive:    
+    if make_archive_zip:    
       self.MakePackage(overwrite_existing)
     else:
       print 'No package requested, skipping.'
