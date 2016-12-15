@@ -103,7 +103,8 @@ class Builder(object):
   def MakeFoldersStructure(self):
     # Make.
     print 'START: Building release structure:'
-    for (dest_folder, src_patterns) in self.STRUCTURE.iteritems():
+    sorted_targets = sorted(self.STRUCTURE.iteritems(), key=lambda x: x[0])
+    for (dest_folder, src_patterns) in sorted_targets:
       if not dest_folder or dest_folder[0] != '/':
         dest_path = self.DEST + '/GameData/' + self.PACKAGE_NAME
         if dest_folder:
