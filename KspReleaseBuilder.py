@@ -54,25 +54,22 @@ class Builder(object):
   # A file name format for releases with build field other than zero.
   DEST_RELEASE_NAME_WITH_BUILD_FMT = None
 
-  # Definition of the main release structure. Entities are handled in *order*, so keep type of this
-  # field OrderedDict or similar.
-  # Key is a path in DEST. The path *must* start from "/". The root in this case
-  # is DEST. There is no way to setup absulte root on the drive.
-  # Value is a path in SRC. It's either a string or a list of patterns:
-  # - If value is a plain string then then it's path to a single file or
-  #   directory.
-  #   If path designates a folder then the entire tree will be copied.
-  # - If value is a list then each item:
-  #   - If does *not* end with "/*" then it's a path to a file.
-  #   - If *does* end with "/*" then it's a folder name. Only files in the
-  #     folder are copied, not the whole tree.
-  #   - If starts from "-" then it's a request to *drop* files in DEST folder
-  #     (the key). Value after "-" is a regular OS path pattern.
-  STRUCTURE = collections.OrderedDict({})
+  # Definition of the main release structure:
+  # - KEY is a path in the DEST folder. Keys are sorted before handling.
+  # - VALUE is an array of Python glob.glob paths:
+  #   - If prefixed with '?' then it's allowed for the pattern to return no files.
+  #   - If prefixed with '-' then patytern will be applied against actual files in
+  #     the *destination* folder, and those files will be deleted.
+  #   - If there is no special prefix then pattern is expected to return at least
+  #     one match.
+  # NOTE. Folder for the KEY is not created if no files were found in any of the
+  #    copy patterns.
+  STRUCTURE = {}
 
   # File copy actions to do after the build.
   # First item of the tuple defines source, and the second item defines the target.
   # The paths are *not* adjusted to either SRC or DEST. I.e. they can be anything.
+  # FIXME: make the glob patterns
   POST_BUILD_COPY = []
 
   def __init__(self, name, make_script_path, archiver_path):
