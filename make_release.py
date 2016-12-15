@@ -10,9 +10,21 @@ import sys
 
 import KspReleaseBuilder
 
+
+# BEGIN: ====== ADJUST variables in this section before doing the release!
+
+# See KspReleaseBuilder.Builder.SHELL_ZIP_BINARY
 SHELL_ZIP_BINARY = 'L:/Program Files/7-Zip/7z.exe'
-MOD_NAME = 'EasyVesselSwitch'
+
+# See KspReleaseBuilder.Builder.SHELL_COMPILE_BINARY_SCRIPT
 BUILD_SCRIPT = 'make_binary.cmd'
+
+# Name of the mod. It will be used in many places, so choose it wisely.
+# At the very least it will be the name of the release archive.
+MOD_NAME = 'EasyVesselSwitch'
+
+# END of adjust section
+
 
 def main(argv):
   try:

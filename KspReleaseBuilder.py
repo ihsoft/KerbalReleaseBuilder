@@ -17,9 +17,13 @@ class Builder(object):
   VERSION = None
 
   # System path to binary that creates ZIP archive from a folder.
+  # See InvokeArchiver() method for the executable parameters.
+  # It's highly recommended to use open source and free 7-Zip which is 100%
+  # compatible with the default setup: http://www.7-zip.org/download.html
   SHELL_ZIP_BINARY = None
   
   # An executable which will be called to build the project's binaraies in release mode.
+  # See CompileBinary() method.
   SHELL_COMPILE_BINARY_SCRIPT = None
 
   # Folder name in game's GameData folder. It's also a release archive name.
@@ -241,14 +245,21 @@ class Builder(object):
       os.remove(package_file_name)
   
     print 'Making %s package...' % self.PACKAGE_NAME
-    code = subprocess.call([
-        self.SHELL_ZIP_BINARY,
-        'a',
-        package_file_name,
-        self.DEST + '/*'])
+    code = self.InvokeArchiver(package_file_name, self.DEST)
     if code != 0:
       print 'ERROR: Failed to make the package.'
       exit(code)
+
+
+  # Invokes archiver to compress the release folder. Places ZIP archive into the specified path.
+  # @param archive_name Path to th archive uncouding it's name and extension (.ZIP).
+  # @param folder_to_compress Release folder to compress.
+  def InvokeArchiver(self, archive_name, folder_to_compress):
+    return subprocess.call([
+        self.SHELL_ZIP_BINARY,
+        'a',
+        archive_name,
+        folder_to_compress + '/*'])
 
 
   # Sets basic settings to a common layout:
