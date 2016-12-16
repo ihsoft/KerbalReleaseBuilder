@@ -1,0 +1,27 @@
+{
+  "PACKAGE_NAME": "DefaultModName",
+  "SRC" : "..",
+  "DEST" : "../Release",
+  "STRUCTURE" : {
+    "" : [
+      "?/LICENSE.*",
+      "?/README.*"
+    ],
+    "Parts" : [
+      "?/Parts/*"
+    ],
+    "Patches" : [
+      "?/Patches/*"
+    ],
+    "Plugins" : [
+      "###SRC_COMPILED_BINARY###",
+      "?###SRC_REPOSITORY_VERSION_FILE###",
+      "?/Binaries/*.dll",
+      "?/Binaries/*.md",
+      "?/Binaries/*.txt"
+    ],
+    "Plugins/PluginData" : [
+      "?/PluginData/*"
+    ]
+  }
+}
