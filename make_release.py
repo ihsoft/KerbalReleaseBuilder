@@ -1,6 +1,7 @@
 # Public domain license.
 # Author: igor.zavoychinskiy@gmail.com
-# Version: 0.1
+# Version: 1.0
+# GitHub: https://github.com/ihsoft/KerbalReleaseBuilder
 
 # Template runner for the builder script.
 
