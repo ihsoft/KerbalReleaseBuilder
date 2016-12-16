@@ -147,10 +147,16 @@ class Builder(object):
 
       # Copy files.
       if copy_sources:
-        self.MaybeCreateFolder(dest_path)
         for source in copy_sources:
-          print '=> copy file:', source
-          shutil.copy(source, dest_path)
+          if os.path.isfile(source):
+            self.MaybeCreateFolder(dest_path)
+            print '=> copy file:', source
+            shutil.copy(source, dest_path)
+          elif os.path.isdir(source):
+            print '=> copy folder:', source
+            shutil.copytree(source, dest_path + '/' + os.path.basename(source))
+          else:
+            print "SKIP:", source
       elif allow_no_matches:
         print '=> skip release folder due to it\'s EMPTY'
       else:
