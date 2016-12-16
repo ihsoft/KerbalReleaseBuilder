@@ -13,7 +13,7 @@ import KspReleaseBuilder
 # BEGIN: ====== ADJUST variables in this section before doing the release!
 
 # See KspReleaseBuilder.Builder.SHELL_ZIP_BINARY
-SHELL_ZIP_BINARY = 'L:/Program Files/7-Zip/7z.exe'
+SHELL_ZIP_BINARY = 'C:/Program Files/7-Zip/7z.exe'
 
 # See KspReleaseBuilder.Builder.SHELL_COMPILE_BINARY_SCRIPT
 BUILD_SCRIPT = 'make_binary.cmd'
