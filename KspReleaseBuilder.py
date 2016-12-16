@@ -120,14 +120,13 @@ class Builder(object):
       copy_sources = []
       drop_patterns = []
       for src_pattern in src_patterns:
-        src_pattern = self.MaybeParseSpecialValue(src_pattern)
         allow_no_matches = False
         is_drop_pattern = False
-        pattern = self.SRC + src_pattern
+        pattern = self.SRC + self.MaybeParseSpecialValue(src_pattern)
 
         if src_pattern[0] == '?':
           allow_no_matches = True
-          pattern = self.SRC + src_pattern[1:]
+          pattern = self.SRC + self.MaybeParseSpecialValue(src_pattern[1:])
         elif src_pattern[0] == '-':
           is_drop_pattern = True
           _, file_name = os.path.split(src_pattern[1:])
