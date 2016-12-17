@@ -130,8 +130,7 @@ class Builder(object):
           pattern = self.SRC + self.ParseMacros(src_pattern[1:])
         elif src_pattern[0] == '-':
           is_drop_pattern = True
-          _, file_name = os.path.split(src_pattern[1:])
-          drop_patterns.append(file_name)
+          drop_patterns.append(src_pattern[1:])
           continue
 
         entry_sources = glob.glob(pattern)
@@ -169,6 +168,9 @@ class Builder(object):
       if drop_patterns:
         drop_sources = []
         for pattern in drop_patterns:
+          if pattern[0] == '/':
+            print 'ERROR: Cleanup pattern must not be absolute:', pattern
+            exit(-1)
           drop_sources.extend(glob.glob(os.path.join(dest_path, pattern)))
         for source in drop_sources:
           if os.path.isfile(source):
