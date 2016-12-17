@@ -15,6 +15,12 @@ Before using release script make sure to do the following:
 
 * Ensure your system can execute Python 2.7+ scripts.
   - Get Python downloads from here: https://www.python.org/download/releases/2.7/.
+* Copy release script files into your project source folder.
+  - Required files are `KspReleaseBuilder.py` and `make_release.py`.
+  - You may use `release_setup.json` as a template for your project settings.
+  - You may use `template_make_binary.cmd` as a template for the building script. Don't forget to rename it into `make_release.cmd`.
+  - If you'd like to join "a standard mod community" (and save a lot of efforts) put the files into folder `Tools` which lives in
+    your project's root.
 * Update variable `SHELL_ZIP_BINARY` in `make_release.py` script to point to the right archiver.
   - Best candidate for the archiver is 7-Zip which is _open source_ and _free_.
     Download it from the [official site](http://www.7-zip.org/download.html).  If you install it on drive `C:` into a default folder
@@ -26,6 +32,9 @@ Before using release script make sure to do the following:
 * Update `release_setup.json` file.
   * At the very least you have to adjust `PACKAGE_NAME` value.
   * In case of your project doesn't fit definition "standard" you also need to adjust release structure.
+
+*Hint*. See [EasyVesselSwitch project](https://github.com/ihsoft/EasyVesselSwitch/tree/master/Tools) for a simple example of setting
+it up.
 
 ## Simple building release structure
 
