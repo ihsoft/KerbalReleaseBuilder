@@ -14,8 +14,8 @@
       "?/Patches/*"
     ],
     "Plugins" : [
-      "###SRC_COMPILED_BINARY###",
-      "?###SRC_REPOSITORY_VERSION_FILE###",
+      "{SRC_COMPILED_BINARY}",
+      "?{SRC_REPOSITORY_VERSION_FILE}",
       "?/Binaries/*.dll",
       "?/Binaries/*.md",
       "?/Binaries/*.txt"

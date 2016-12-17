@@ -194,10 +194,7 @@ class Builder(object):
   # Macros start and ends with "###". E.g. "##ABC###" means value of "ABC"
   # property on the Builder instance.
   def MaybeParseSpecialValue(self, value):
-    if value.startswith('###') and value.endswith('###'):
-      spc_name = value[3:-3]
-      return getattr(self, spc_name)
-    return value
+    return re.sub(r'\{(\w+)}', lambda x: getattr(self, x.group(1)), value)
    
   
   # Extarcts version number of the release from the sources.
