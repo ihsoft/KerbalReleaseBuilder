@@ -178,7 +178,6 @@ class Builder(object):
             print '=> drop folder:', source
             shutil.rmtree(source)
 
-
     print 'END: Building release structure'
 
 
