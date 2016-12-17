@@ -123,11 +123,11 @@ class Builder(object):
       for src_pattern in src_patterns:
         allow_no_matches = False
         is_drop_pattern = False
-        pattern = self.SRC + self.MaybeParseSpecialValue(src_pattern)
+        pattern = self.SRC + self.ParseMacros(src_pattern)
 
         if src_pattern[0] == '?':
           allow_no_matches = True
-          pattern = self.SRC + self.MaybeParseSpecialValue(src_pattern[1:])
+          pattern = self.SRC + self.ParseMacros(src_pattern[1:])
         elif src_pattern[0] == '-':
           is_drop_pattern = True
           _, file_name = os.path.split(src_pattern[1:])
@@ -192,7 +192,7 @@ class Builder(object):
   # Builder instance. If it's not then the same value is returned.
   # Macros start and ends with "###". E.g. "##ABC###" means value of "ABC"
   # property on the Builder instance.
-  def MaybeParseSpecialValue(self, value):
+  def ParseMacros(self, value):
     return re.sub(r'\{(\w+)}', lambda x: getattr(self, x.group(1)), value)
    
   
