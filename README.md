@@ -13,6 +13,8 @@ build new binaries, update version file (e.g. `.version`), and pack the files in
 
 Before using release script make sure to do the following:
 
+* Ensure your system can execute Python 2.7+ scripts.
+  - Get Python downloads from here: https://www.python.org/download/releases/2.7/.
 * Update variable `SHELL_ZIP_BINARY` in `make_release.py` script to point to the right archiver.
   - Best candidate for the archiver is 7-Zip which is _open source_ and _free_.
     Download it from the [official site](http://www.7-zip.org/download.html).  If you install it on drive `C:` into a default folder
