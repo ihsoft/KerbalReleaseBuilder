@@ -2,6 +2,7 @@
   "PACKAGE_NAME": "DefaultModName",
   "SRC" : "..",
   "DEST" : "../Release",
+  "ARCHIVE_DEST" : "..",
   "STRUCTURE" : {
     "" : [
       "?/LICENSE.*",
