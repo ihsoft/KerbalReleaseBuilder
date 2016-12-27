@@ -213,7 +213,7 @@ class Builder(object):
   # Macros start and ends with "###". E.g. "##ABC###" means value of "ABC"
   # property on the Builder instance.
   def ParseMacros(self, value):
-    return re.sub(r'\{(\w+)}', lambda x: getattr(self, x.group(1)), value)
+    return re.sub(r'\{(\w+)}', lambda x: self.ParseMacros(getattr(self, x.group(1))), value)
    
   
   # Extarcts version number of the release from the sources.
