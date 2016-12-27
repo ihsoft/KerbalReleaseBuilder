@@ -98,7 +98,7 @@ class Builder(object):
 
   # Makes the binary.
   def CompileBinary(self):
-    binary_path = self.SRC + self.SRC_COMPILED_BINARY
+    binary_path = self.SRC + self.ParseMacros(self.SRC_COMPILED_BINARY)
     if os.path.exists(binary_path):
       os.unlink(binary_path)
     print 'Compiling sources in PROD mode...'
@@ -218,7 +218,7 @@ class Builder(object):
   
   # Extarcts version number of the release from the sources.
   def ExtractVersion(self):
-    file_path = self.SRC + self.SRC_VERSIONS_FILE
+    file_path = self.SRC + self.ParseMacros(self.SRC_VERSIONS_FILE)
     with open(file_path) as f:
       content = f.readlines()
     for line in content:
@@ -244,13 +244,15 @@ class Builder(object):
     if self.POST_BUILD_COPY:
       print 'Post-build copy step:'
       for source, target in self.POST_BUILD_COPY:
+        source = self.ParseMacros(source)
+        target = self.ParseMacros(target)
         print '  ..."%s" into "%s"...' % (source, target)
         shutil.copy(source, target)
   
   
   # Updates the source files with the version info.
   def UpdateVersionInSources(self):
-    version_file = self.SRC + self.SRC_REPOSITORY_VERSION_FILE
+    version_file = self.SRC + self.ParseMacros(self.SRC_REPOSITORY_VERSION_FILE)
     print 'Update version file:', version_file
     with open(version_file) as fp:
       content = json.load(fp);
@@ -275,7 +277,7 @@ class Builder(object):
   # Creates a package for re-destribution.
   def MakePackage(self, overwrite_existing):
     release_name = self.MakeReleaseFileName();
-    package_file_name = '%s/%s.zip' % (self.ARCHIVE_DEST, release_name)
+    package_file_name = self.ParseMacros('%s/%s.zip' % (self.ARCHIVE_DEST, release_name))
     if os.path.exists(package_file_name): 
       if not overwrite_existing:
         print 'ERROR: Package for this version already exists: %s' % package_file_name
