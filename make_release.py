@@ -26,7 +26,7 @@ RELEASE_JSON_FILE = 'release_setup.json'
 # END: ====== ADJUST section ends here.
 
 
-# Custom method to setup build er when JSON is disabled.
+# Custom method to setup builder when JSON is disabled.
 def SetupBuildVariables(builder):
   raise NotImplementedError(
     'When RELEASE_JSON_FILE is not set SetupBuildVariables() method must be'
