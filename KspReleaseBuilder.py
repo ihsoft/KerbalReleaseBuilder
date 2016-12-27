@@ -308,24 +308,21 @@ class Builder(object):
   # Sets basic settings to a common layout:
   # - Versions for build 0 are named as '<mod_name>.1.2.3.zip'.
   # - Versions for build otehr than 0 are named as '<mod_name>.1.2.3_build4.zip'.
-  # - Release DLL builds into '/Source/bin/Release' and DLL anme matches package name.
-  # - AVC-like version file is expected to exist in the mod's root.
-  #
-  # @param name Name of the mod to use for folder and file names.
-  def SetupDefaultLayout(self, name):
-    self.PACKAGE_NAME = name
-    self.DEST_RELEASE_NAME_FMT = self.PACKAGE_NAME + '_v%d.%d.%d'
-    self.DEST_RELEASE_NAME_WITH_BUILD_FMT = self.PACKAGE_NAME + '_v%d.%d.%d_build%d'
-    self.SRC_COMPILED_BINARY = '/Source/bin/Release/' + self.PACKAGE_NAME + '.dll'
-    self.SRC_REPOSITORY_VERSION_FILE = '/' + self.PACKAGE_NAME + '.version'
+  # - Release DLL builds into '{SRC}/Source/bin/Release/<mod_name>.dll'.
+  # - AVC-like version file is expected to exist in '{SRC}/<mod_name>.version'
+  def SetupDefaultLayout(self):
+    self.DEST_RELEASE_NAME_FMT = '{PACKAGE_NAME}_v%d.%d.%d'
+    self.DEST_RELEASE_NAME_WITH_BUILD_FMT = '{PACKAGE_NAME}_v%d.%d.%d_build%d'
+    self.SRC_COMPILED_BINARY = '/Source/bin/Release/{PACKAGE_NAME}.dll'
+    self.SRC_REPOSITORY_VERSION_FILE = '/{PACKAGE_NAME}.version'
 
 
   # Loads main build settings from a JSON file.
   def LoadSettingsFromJson(self, file_name):
     print 'Load settings from JSON file:', file_name
+    self.SetupDefaultLayout()
     with open(file_name) as fp:
       content = json.load(fp);
-    self.SetupDefaultLayout(content['PACKAGE_NAME'])
     for (key, value) in content.iteritems():
       if key in self.JSON_VALUES:
         setattr(self, key, value)
