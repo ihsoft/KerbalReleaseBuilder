@@ -73,6 +73,24 @@ class Builder(object):
   # FIXME: make the glob patterns
   POST_BUILD_COPY = []
 
+  # Settings that are allowed to be accepted from the JSON file.
+  JSON_VALUES = [
+    'SHELL_ZIP_BINARY',
+    'SHELL_COMPILE_BINARY_SCRIPT',
+    'PACKAGE_NAME',
+    'SRC',
+    'DEST',
+    'ARCHIVE_DEST',
+    'SRC_COMPILED_BINARY',
+    'SRC_REPOSITORY_VERSION_FILE',
+    'SRC_VERSIONS_FILE',
+    'STRUCTURE',
+    'POST_BUILD_COPY',
+    'DEST_RELEASE_NAME_FMT',
+    'DEST_RELEASE_NAME_WITH_BUILD_FMT',
+  ]
+
+
   def __init__(self, make_script_path, archiver_path):
     self.SHELL_COMPILE_BINARY_SCRIPT = make_script_path
     self.SHELL_ZIP_BINARY = archiver_path
@@ -306,17 +324,13 @@ class Builder(object):
     with open(file_name) as fp:
       content = json.load(fp);
     self.SetupDefaultLayout(content['PACKAGE_NAME'])
-    if 'SRC' in content:
-      self.SRC = content['SRC']
-    if 'DEST' in content:
-      self.DEST = content['DEST']
-    if 'ARCHIVE_DEST' in content:
-      self.ARCHIVE_DEST = content['ARCHIVE_DEST']
-    self.STRUCTURE = content['STRUCTURE']
-    if 'SRC_COMPILED_BINARY' in content:
-      self.SRC_COMPILED_BINARY = content['SRC_COMPILED_BINARY']
-    if 'SRC_REPOSITORY_VERSION_FILE' in content:
-      self.SRC_REPOSITORY_VERSION_FILE = content['SRC_REPOSITORY_VERSION_FILE']
+    for (key, value) in content.iteritems():
+      if key in self.JSON_VALUES:
+        setattr(self, key, value)
+      else:
+        print 'ERROR: Unknown key in JSON:', key
+        print 'HINT: Allowed keys are:\n', '\n'.join(self.JSON_VALUES)
+        exit(-1)
 
 
   # Runs all the steps and produces a release ZIP.
