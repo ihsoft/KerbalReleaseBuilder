@@ -102,7 +102,7 @@ Note that `{PACKAGE_NAME}.version` file will also be updated in the source so wh
 By default script searches for file `release_setup.json`. Once it's found all the setup data is loaded from it. This file is nothing
 more but just a definition of values for the
 [`KspReleaseBuilder.Builder`](https://github.com/ihsoft/KerbalReleaseBuilder/blob/master/KspReleaseBuilder.py) class instance.
-To get more information about each setting read the docs in the source file. Below are described the most important settings.
+To get more information about each setting read the docs in the source file (search for `JSON_VALUES`). Below are described the most important settings.
 
 | Key | Description |
 |-----|-------------|
