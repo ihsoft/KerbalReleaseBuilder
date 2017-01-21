@@ -1,3 +1,7 @@
+# !!! DEPRECATED !!!
+
+This repository is not supported anymore. `KerbalReleaseBuilder` is now part of [`KSPDev`](https://github.com/ihsoft/KSPDev/tree/master/Sources/ReleaseBuilder).
+
 # Background
 
 When supporting mods for Kerbal Space Program making a release archive is the most boring task. New binaries need to be build, all
