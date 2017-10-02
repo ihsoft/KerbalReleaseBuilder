@@ -1,6 +1,6 @@
 # !!! DEPRECATED !!!
 
-This repository is not supported anymore. `KerbalReleaseBuilder` is now part of [`KSPDev`](https://github.com/ihsoft/KSPDev/tree/master/Sources/ReleaseBuilder).
+This repository is not supported anymore. `KerbalReleaseBuilder` is moved into [`KSPDev_ReleaseBuilder`](https://github.com/ihsoft/KSPDev_ReleaseBuilder).
 
 # Background
 
